@@ -1,4 +1,8 @@
 import mongoose, {Schema, Types} from "mongoose";
+const bcryptjs = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
+import validator from 'validator';
 
 const userSchema = new mongoose.Schema({
      firstName: {
@@ -14,11 +18,14 @@ const userSchema = new mongoose.Schema({
      email: {
           type: String,
           required: true,
-          unique: true
+          unique: true,
+          validate: [validator.isEmail, "Please enter valid Email!"]
      },
      password: {
           type: String,
-          required: true
+          required: true,
+          minLength: [8, "Password should be greater than 8 characters"],
+          select: false 
      },
      userName: {
           type: String,
@@ -111,7 +118,24 @@ const userSchema = new mongoose.Schema({
                type: String,
           }
      },
+     resetPasswordToken: String,
+     resetPasswordExpire: Date
 
 })
 
+//when document is saved, this method will be called and password will be hashed
+userSchema.pre("save",async function (next:Function){
+     if(!this.isModified("password")){
+          next();
+     }
+     //Here this refers to the document (object) (user) which is saved in database
+     this.password = await bcryptjs.hash(this.password, 10);
+
+})
+
+userSchema.methods.getJwtToken = function () {
+     return jwt.sign({id: this._id}, process.env.JWT_SECRET , {
+          expiresIn: process.env.JWT_EXPIRE,
+     });
+}
 export = mongoose.model("User", userSchema);

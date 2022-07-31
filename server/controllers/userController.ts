@@ -9,10 +9,19 @@ export const registerUser = async function (req: any, res: any, next: any) {
                firstName, lastName, email, password, userName, gender, dobYear, dobMonth, dobDay, verified
           })
 
-          res.status(201).json({
+          const token = user.getJwtToken();
+
+          const tokenObject = {
+               expires: new Date(
+                    Date.now () + 7 * 24 * 60 * 60 * 1000
+               ),
+               httpOnly: true
+          }
+          res.status(201).cookie("token", token, tokenObject).json({
                success: true,
                message: "User succesfully created",
                user
+               token
           })
 
      } catch (error: any) {
