@@ -55,10 +55,6 @@ const userSchema = new mongoose.Schema({
           type: Number,
           required: true,
      },
-     verified: {
-          type: Boolean,
-          required: true
-     },
      followers: {
           type: Array,
           default: []
@@ -138,4 +134,8 @@ userSchema.methods.getJwtToken = function () {
           expiresIn: process.env.JWT_EXPIRE,
      });
 }
+
+userSchema.methods.comparePassword = async function name(params: any) {
+     return await bcryptjs.compare(params, this.password);;
+ }
 export = mongoose.model("User", userSchema);
