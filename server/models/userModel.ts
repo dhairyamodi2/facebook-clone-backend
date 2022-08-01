@@ -71,6 +71,18 @@ const userSchema = new mongoose.Schema({
           type: Array,
           default: []
      },
+     sentFriendRequest: {
+          type: Array,
+          default: []
+     },
+     mutedBy : {
+          type: Array,
+          default: []
+     },
+     blockedBy: {
+          type: Array,
+          default: []
+     },
      savedPosts: [
           {
                post: {
